@@ -5,6 +5,6 @@ cd dist
 git init
 git add -A
 git commit -m 'deploy page'
-git push -f https://github.com/mitsuoysharag/TesisChatbot_Vue.git  master:gh-pages
+git push -f https://github.com/mitsuoysharag/TesisChatbotDocente_Vue.git  master:gh-pages
 
 cd -

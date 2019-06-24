@@ -8,30 +8,66 @@ export default new Vuex.Store({
     codigo_alumno: "14200098",
 
     servicio: {
-      enviarConsulta(consulta, onSuccess, onError) {
-        console.log(JSON.stringify(consulta))
-        fetch('https://adaptive-chatbot.herokuapp.com/pregunta',{
+      guardarConocimiento(conocimientos, onSuccess, onError) {
+        conocimientos.forEach(c => {
+          let conocimiento = {
+            question: c.pregunta,
+            answer: c.respuesta,
+            test: "",
+            reading: "",
+            application: "",
+            text: "",
+            video: "",
+            podcast: "",
+            prezi: "",
+            model: ""
+          }
+          console.log(JSON.stringify(conocimiento))
+          fetch('https://adaptive-chatbot.herokuapp.com/respuesta', {
+            method: 'POST',
+            body: JSON.stringify(conocimiento),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .catch(error => onError(error))
+          .then(response => onSuccess(response))
+        })
+        /*fetch('https://adaptive-chatbot.herokuapp.com/respuesta',{
           method: 'POST',
-          body: JSON.stringify(consulta),
+          body: JSON.stringify(conocimiento),
           headers:{
             'Content-Type': 'application/json'
           }
         })
         .then(response => response.json())
         .catch(error => onError(error))
-        .then(response => onSuccess(response))
+        .then(response => onSuccess(response))*/
       },
-      enviarPerfil(perfil, onSuccess, onError) {
-        console.log(JSON.stringify(perfil))
-        fetch('https://adaptive-chatbot.herokuapp.com/perfil',{
+      enviarConsulta(consulta, onSuccess, onError) {
+        console.log(JSON.stringify(consulta))
+        fetch('https://adaptive-chatbot.herokuapp.com/pregunta', {
           method: 'POST',
-          body: JSON.stringify(perfil),
-          headers:{
+          body: JSON.stringify(consulta),
+          headers: {
             'Content-Type': 'application/json'
           }
         })
-        .then(response => onSuccess())
-        .catch(error => onError(error))
+          .then(response => response.json())
+          .catch(error => onError(error))
+          .then(response => onSuccess(response))
+      },
+      enviarPerfil(perfil, onSuccess, onError) {
+        console.log(JSON.stringify(perfil))
+        fetch('https://adaptive-chatbot.herokuapp.com/perfil', {
+          method: 'POST',
+          body: JSON.stringify(perfil),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => onSuccess())
+          .catch(error => onError(error))
       }
     }
   },
