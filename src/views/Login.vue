@@ -14,6 +14,7 @@
             v-model="contraseña"
             :rules="contraseñaRules"
             label="Contraseña"
+            type="password"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
@@ -38,7 +39,7 @@ export default {
   methods: {
     iniciarSesion() {
       if (this.$refs.form.validate()) {
-        this.$router.push('test')
+        this.$router.push('cursos')
       }
     }
   }

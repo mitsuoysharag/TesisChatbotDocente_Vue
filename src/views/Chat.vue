@@ -3,6 +3,20 @@
     <Cabecera/>
     <v-container fluid grid-list-xl style="height: 100%">
       <v-layout justify-center wrap style="height: 100%">
+        <v-flex xs12 md7 style="height: 100%">
+          <v-card class="elevation-6 fill-height">
+            <div class="chat-recurso" style="height: 100%">
+              <div class="chat-creacion" width="100%" height="100%">
+              </div>
+              <div class="my-3">
+                <v-btn fab dark small color="primary">
+                  <v-icon dark>send</v-icon>
+                </v-btn>
+              </div>
+            </div>
+          </v-card>
+        </v-flex>
+
         <v-flex xs12 md5 style="height: 100%">
           <v-card class="elevation-6 fill-height">
             <div class="chat-componente" style="height: 100%">
@@ -99,9 +113,6 @@ export default {
       recurso_estado: 0, //0: no hay, 1: cargando, 2: hay
       recurso_maximizado: false,
       mensajes: [
-        new Mensaje(1, "Hola :)"),
-        new Mensaje(0, "Hola, en qué puedo ayudarte?"),
-        new Mensaje(1, "Qué es una chatbot?"),
         new Mensaje(
           0,
           "Un agente conversacional es una herramienta capaz de procesar lenguaje natural y ofrecer información de forma coherente en tiempo real mediante un diálogo. Estas entidades también son conocidas como chatbots.",
@@ -109,16 +120,6 @@ export default {
             "Chatbot.pdf",
             "https://eprints.ucm.es/32448/1/Asistente%20Virtual%20%28chatbot%29%20para%20la%20Web%20de%20la%20Facultad%20de%20Inform%C3%A1tica%28Luis%20Enrique%20Cubero%20Final%29.pdf",
             0
-          )
-        ),
-        new Mensaje(1, "Algun video?"),
-        new Mensaje(
-          0,
-          "Aquí tienes",
-          new Recurso(
-            "Video Chatbot",
-            "https://www.youtube.com/embed/mg6_U57ofb8",
-            1
           )
         )
       ]

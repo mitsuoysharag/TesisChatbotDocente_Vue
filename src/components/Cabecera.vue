@@ -6,9 +6,6 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
     <v-toolbar-items class="hidden-sm-and-down">
-      <v-btn flat @click="ingresarTest">
-        <span class="mr-2">Test</span>
-      </v-btn>
       <v-btn flat @click="ingresarCursos">
         <span class="mr-2">Mis Cursos</span>
       </v-btn>
