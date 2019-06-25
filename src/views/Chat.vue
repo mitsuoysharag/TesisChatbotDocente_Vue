@@ -31,7 +31,7 @@
                     <div v-if="conocimiento._mostrarDetalle">
                       <v-text-field
                         class="pt-1"
-                        v-model="conocimiento.text"
+                        v-model="conocimiento.texto"
                         auto-grow
                         solo
                         hide-details
@@ -54,7 +54,13 @@
                   <div class="pt-3">
                     <v-menu bottom left>
                       <template v-slot:activator="{ on }">
-                        <v-btn flat icon small color="primary" @click="conocimiento._mostrarDetalle = !conocimiento._mostrarDetalle">
+                        <v-btn
+                          flat
+                          icon
+                          small
+                          color="primary"
+                          @click="conocimiento._mostrarDetalle = !conocimiento._mostrarDetalle"
+                        >
                           <v-icon v-if="conocimiento._mostrarDetalle" dark>expand_less</v-icon>
                           <v-icon v-else dark>expand_more</v-icon>
                         </v-btn>
@@ -178,7 +184,7 @@ export default {
       recurso: null,
       recurso_estado: 0, //0: no hay, 1: cargando, 2: hay
       recurso_maximizado: false,
-      conocimientos: [new Conocimiento("Hola", "Hola, que tal?")],
+      conocimientos: [],
       mensajes: [
         /*new Mensaje(
           0,
@@ -194,10 +200,26 @@ export default {
   },
   mounted() {
     this.scrollDown();
+    this.$store.state.servicio.obtenerConocimiento(
+      //onSuccess
+      response => {
+        let _conocimientos = JSON.parse(response);
+        console.log(_conocimientos)
+        _conocimientos.forEach(c => {
+          this.conocimientos.push(
+            new Conocimiento(c._id.$oid, c.question, c.answer, c.text, c.video)
+          );
+        });
+      },
+      //onError
+      error => {
+        console.log(error);
+      }
+    );
   },
   methods: {
     agregarConocimiento() {
-      this.conocimientos.push(new Conocimiento("", ""));
+      this.conocimientos.push(new Conocimiento("", "", "", "", ""));
     },
     guardarConocimiento() {
       this.$store.state.servicio.guardarConocimiento(
@@ -281,9 +303,12 @@ export default {
   }
 };
 class Conocimiento {
-  constructor(pregunta, respuesta) {
+  constructor(id, pregunta, respuesta, texto, video) {
+    this.id = id;
     this.pregunta = pregunta;
     this.respuesta = respuesta;
+    this.texto = texto;
+    this.video = video;
     this._mostrarDetalle = true;
   }
 }

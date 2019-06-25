@@ -30,19 +30,20 @@ export default new Vuex.Store({
               'Content-Type': 'application/json'
             }
           })
-          .catch(error => onError(error))
-          .then(response => onSuccess(response))
+            .catch(error => onError(error))
+            .then(response => onSuccess(response))
         })
-        /*fetch('https://adaptive-chatbot.herokuapp.com/respuesta',{
-          method: 'POST',
-          body: JSON.stringify(conocimiento),
-          headers:{
+      },
+      obtenerConocimiento(onSuccess, onError) {
+        fetch('https://adaptive-chatbot.herokuapp.com/preguntas', {
+          method: 'GET',
+          headers: {
             'Content-Type': 'application/json'
           }
         })
-        .then(response => response.json())
-        .catch(error => onError(error))
-        .then(response => onSuccess(response))*/
+          .then(response => response.json())
+          .catch(error => onError(error))
+          .then(response => onSuccess(response))
       },
       enviarConsulta(consulta, onSuccess, onError) {
         console.log(JSON.stringify(consulta))
