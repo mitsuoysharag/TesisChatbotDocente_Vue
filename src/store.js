@@ -95,7 +95,7 @@ export default new Vuex.Store({
             'Content-Type': 'application/json'
           }
         })
-          .then(response => onSuccess())
+          .then(response => onSuccess(response))
           .catch(error => onError(error))
       }
     }
