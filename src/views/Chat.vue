@@ -1,93 +1,9 @@
 <template>
   <v-content class="chat-vista">
-    <Cabecera/>
+    <Cabecera />
     <v-container fluid grid-list-xl style="height: 100%">
       <v-layout justify-center wrap style="height: 100%">
-        <v-flex xs12 md7 style="height: 100%">
-          <v-card class="elevation-6 fill-height">
-            <div class="chat-recurso" style="height: 100%">
-              <div class="chat-creacion">
-                <v-layout v-for="(conocimiento, index) in conocimientos" :key="index">
-                  <v-flex>
-                    <v-textarea
-                      v-model="conocimiento.pregunta"
-                      auto-grow
-                      solo
-                      hide-details
-                      rows="1"
-                      color="deep-purple"
-                      label="Pregunta"
-                    ></v-textarea>
-                  </v-flex>
-                  <v-flex>
-                    <v-textarea
-                      v-model="conocimiento.respuesta"
-                      auto-grow
-                      solo
-                      hide-details
-                      rows="1"
-                      label="Respuesta"
-                    ></v-textarea>
-                    <div v-if="conocimiento._mostrarDetalle">
-                      <v-text-field
-                        class="pt-1"
-                        v-model="conocimiento.texto"
-                        auto-grow
-                        solo
-                        hide-details
-                        rows="1"
-                        prepend-icon="file_copy"
-                        label="Enlace Texto"
-                      ></v-text-field>
-                      <v-text-field
-                        class="pt-1"
-                        v-model="conocimiento.video"
-                        auto-grow
-                        solo
-                        hide-details
-                        rows="1"
-                        prepend-icon="video_library"
-                        label="Enlace Video"
-                      ></v-text-field>
-                    </div>
-                  </v-flex>
-                  <div class="pt-3">
-                    <v-menu bottom left>
-                      <template v-slot:activator="{ on }">
-                        <v-btn
-                          flat
-                          icon
-                          small
-                          color="primary"
-                          @click="conocimiento._mostrarDetalle = !conocimiento._mostrarDetalle"
-                        >
-                          <v-icon v-if="conocimiento._mostrarDetalle" dark>expand_less</v-icon>
-                          <v-icon v-else dark>expand_more</v-icon>
-                        </v-btn>
-                        <v-btn flat icon small color="primary" v-on="on">
-                          <v-icon dark>more_horiz</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-tile @click="eliminarConocimiento(index)">
-                          <v-list-tile-title>Eliminar</v-list-tile-title>
-                        </v-list-tile>
-                      </v-list>
-                    </v-menu>
-                  </div>
-                </v-layout>
-              </div>
-              <div class="my-3">
-                <v-btn fab dark small color="success" @click="agregarConocimiento">
-                  <v-icon dark>add</v-icon>
-                </v-btn>
-                <v-btn fab dark small color="primary" @click="guardarConocimiento">
-                  <v-icon dark>save</v-icon>
-                </v-btn>
-              </div>
-            </div>
-          </v-card>
-        </v-flex>
+        <Chat_Creacion />
 
         <v-flex xs12 md5 style="height: 100%">
           <v-card class="elevation-6 fill-height">
@@ -136,18 +52,7 @@
               :class="{ 'chat-recurso-maximizado':recurso_maximizado }"
               style="height: 100%"
             >
-              <embed
-                v-if="recurso && recurso.tipo==0"
-                :src="recurso.enlace"
-                width="100%"
-                height="100%"
-              >
-              <iframe
-                v-else-if="recurso && recurso.tipo==1"
-                :src="recurso.enlace"
-                width="100%"
-                height="100%"
-              ></iframe>
+              <embed v-if="recurso" :src="recurso.enlace" width="100%" height="100%" />
               <div v-else style="margin: auto">
                 <v-progress-circular :size="70" :width="7" color="primary" indeterminate></v-progress-circular>
               </div>
@@ -176,6 +81,7 @@
 
 <script>
 import Cabecera from "../components/Cabecera";
+import Chat_Creacion from "../components/Chat_Creacion";
 export default {
   data() {
     return {
@@ -184,7 +90,6 @@ export default {
       recurso: null,
       recurso_estado: 0, //0: no hay, 1: cargando, 2: hay
       recurso_maximizado: false,
-      conocimientos: [],
       mensajes: [
         /*new Mensaje(
           0,
@@ -200,83 +105,55 @@ export default {
   },
   mounted() {
     this.scrollDown();
-    this.$store.state.servicio.obtenerConocimiento(
-      //onSuccess
-      response => {
-        let _conocimientos = JSON.parse(response);
-        console.log(_conocimientos)
-        _conocimientos.forEach(c => {
-          this.conocimientos.push(
-            new Conocimiento(c._id.$oid, c.question, c.answer, c.text, c.video)
-          );
-        });
-      },
-      //onError
-      error => {
-        console.log(error);
-      }
-    );
   },
   methods: {
-    agregarConocimiento() {
-      this.conocimientos.push(new Conocimiento("", "", "", "", ""));
-    },
-    guardarConocimiento() {
-      this.$store.state.servicio.guardarConocimiento(
-        this.conocimientos,
-        //onSuccess
-        response => {
-          console.log(response);
-        },
-        //onError
-        error => {
-          console.log(error);
-        }
-      );
-    },
-    eliminarConocimiento(index) {
-      this.conocimientos.splice(index, 1);
-    },
     enviarMensaje() {
       if (this.texto.trim().length != 0 && this.enviar_mensaje) {
         this.enviar_mensaje = false;
         this.mensajes.push(new Mensaje(1, this.texto));
-        let consulta = {
-          codigo: this.$store.state.codigo_alumno,
+
+        let data = {
+          alumno_id: this.$store.state.alumno_id,
           consulta: this.texto
         };
         this.texto = "";
 
-        this.responderMensaje(consulta);
+        this.obtenerRespuesta(data);
         this.scrollDown();
       }
     },
-    responderMensaje(consulta) {
-      this.$store.state.servicio.enviarConsulta(
-        consulta,
-        //onSuccess
+    obtenerRespuesta(data) {
+      console;
+      this.$store.state.servicio.obtenerRespuesta(
+        data,
         response => {
+          //onSuccess
           this.enviar_mensaje = true;
+          console.log(response);
+
           if (typeof response !== "undefined") {
-            console.log(response);
             this.enviar_mensaje = true;
-            this.mensajes.push(new Mensaje(0, response.answer));
-            if (response.text.trim().length != 0)
+            this.mensajes.push(new Mensaje(0, response.respuesta));
+
+            if (response.pdf.trim().length != 0)
               this.mensajes.push(
-                new Mensaje(0, "", new Recurso("Texto", response.text, 0))
+                new Mensaje(0, "", new Recurso("Texto", response.pdf))
               );
             if (response.video.trim().length != 0)
               this.mensajes.push(
-                new Mensaje(0, "", new Recurso("Video", response.video, 0))
+                new Mensaje(0, "", new Recurso("Video", response.video))
               );
             this.scrollDown();
+
+            console.log(response);
           }
         },
-        //onError
         error => {
+          //onError
           this.enviar_mensaje = true;
-          console.log(error);
           this.scrollDown();
+
+          console.log(error);
         }
       );
     },
@@ -299,19 +176,10 @@ export default {
     }
   },
   components: {
-    Cabecera
+    Cabecera,
+    Chat_Creacion
   }
 };
-class Conocimiento {
-  constructor(id, pregunta, respuesta, texto, video) {
-    this.id = id;
-    this.pregunta = pregunta;
-    this.respuesta = respuesta;
-    this.texto = texto;
-    this.video = video;
-    this._mostrarDetalle = true;
-  }
-}
 class Mensaje {
   constructor(autor, texto, recurso) {
     this.autor = autor;
@@ -320,10 +188,9 @@ class Mensaje {
   }
 }
 class Recurso {
-  constructor(nombre, enlace, tipo) {
+  constructor(nombre, enlace) {
     this.nombre = nombre;
     this.enlace = enlace;
-    this.tipo = tipo; //0:pdf 1:video
   }
 }
 </script>
@@ -338,12 +205,6 @@ class Recurso {
 }
 #chat-ventana {
   padding: 20px;
-  overflow-y: auto;
-}
-.chat-creacion {
-  width: 100%;
-  height: 100%;
-  padding: 16px;
   overflow-y: auto;
 }
 .chat-botones {
@@ -393,16 +254,5 @@ class Recurso {
   height: 100%;
   border-bottom: 1px solid #ccc;
   overflow-y: auto;
-}
-/*Scrollbar*/
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-thumb {
-  background: rgb(224, 223, 223);
-}
-::-webkit-scrollbar-thumb:hover {
-  cursor: pointer;
-  background: rgb(206, 206, 206);
 }
 </style>

@@ -1,0 +1,7 @@
+github
+  user: chatbot.tesis@gmail.com
+  pass: adapt1ve_chatbot
+
+mongo
+  user: chatbot_tesis@gmail.com
+  pass: adapt1ve_chatbot
