@@ -77,12 +77,23 @@
           </v-layout>
         </div>
         <div class="my-3">
-          <v-btn fab dark small color="success" @click="agregarConocimiento">
-            <v-icon dark>add</v-icon>
-          </v-btn>
-          <v-btn fab dark small color="primary" @click="guardarCambios">
-            <v-icon dark>save</v-icon>
-          </v-btn>
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn fab dark small color="success" @click="agregarConocimiento" v-on="on">
+                <v-icon dark>add</v-icon>
+              </v-btn>
+            </template>
+            <h3>Agregar Conocimiento</h3>
+          </v-tooltip>
+
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn fab dark small color="primary" @click="guardarCambios" v-on="on">
+                <v-icon dark>save</v-icon>
+              </v-btn>
+            </template>
+            <h3>Guardar Cambios</h3>
+          </v-tooltip>
         </div>
       </div>
     </v-card>
